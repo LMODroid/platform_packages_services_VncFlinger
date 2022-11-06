@@ -58,7 +58,7 @@ VirtualDisplay::VirtualDisplay(ui::Size* mode, ui::Rotation* state,
 		SurfaceComposerClient::Transaction t;
 		t.setDisplaySurface(mDisplayToken, mProducer);
 		t.setDisplayProjection(mDisplayToken, *state, mSourceRect, displayRect);
-		t.setDisplayLayerStack(mDisplayToken, mLayerId);
+		t.setDisplayLayerStack(mDisplayToken, android::ui::LayerStack::fromValue(mLayerId));
 		t.apply();
 	}
 
