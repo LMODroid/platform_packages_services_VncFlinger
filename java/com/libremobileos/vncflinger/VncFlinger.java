@@ -32,8 +32,6 @@ public class VncFlinger extends Service {
 		System.loadLibrary("jni_vncflinger");
 		System.loadLibrary("jni_audiostreamer");
 	}
-	public final int ONGOING_NOTIFICATION_ID = 5;
-	public final String CHANNEL_ID = "services";
 	public final String LOG_TAG = "VNCFlinger";
 
 	public boolean mMirrorInternal = false;
@@ -191,27 +189,6 @@ public class VncFlinger extends Service {
 			inputManager.setForceNullCursor(false);
 		}
 
-		NotificationManager notificationManager = getSystemService(NotificationManager.class);
-		if (notificationManager.getNotificationChannel(CHANNEL_ID) == null) {
-			CharSequence name = getString(R.string.channel_name);
-			String description = getString(R.string.channel_description);
-			int importance = NotificationManager.IMPORTANCE_LOW;
-			NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
-			channel.setDescription(description);
-			channel.setBlockable(true);
-			notificationManager.createNotificationChannel(channel);
-		}
-		Notification.Builder notification = new Notification.Builder(this, CHANNEL_ID)
-				.setContentTitle(getText(R.string.notification_title))
-				.setContentText(getString(R.string.notification_message, getText(R.string.app_name)))
-				.setSmallIcon(R.drawable.ic_desktop);
-		if (mIntentEnable) {
-			Intent i = new Intent();
-			i.setComponent(new ComponentName(mIntentPkg, mIntentComponent));
-			notification.setContentIntent(PendingIntent.getActivity(mContext, 0, i, PendingIntent.FLAG_IMMUTABLE));
-		}
-		startForeground(ONGOING_NOTIFICATION_ID, notification.build());
-
 		mIsRunning = true;
 		return START_NOT_STICKY;
 	}
@@ -280,7 +257,7 @@ public class VncFlinger extends Service {
 		if ((exitCode = initializeVncFlinger(mVNCFlingerArgs)) == 0) {
 			doSetDisplayProps();
 			if ((exitCode = startService()) == 0) {
-				stopForeground(STOP_FOREGROUND_REMOVE);
+				stopSelf();
 				return;
 			}
 		}
@@ -297,7 +274,7 @@ public class VncFlinger extends Service {
 	private void doSetDisplayProps() {
 		setDisplayProps(mMirrorInternal ? -1 : mWidth, mMirrorInternal ? -1 : mHeight,
 				mMirrorInternal ? -1 : mDisplay.getDisplay().getRotation() * 90, mMirrorInternal ? 0 : -1, 
-				mEmulateTouch, mUseRelativeInput);
+				mEmulateTouch, mUseRelativeInput, mSupportClipboard);
 	}
 
 	// used from native
@@ -328,7 +305,8 @@ public class VncFlinger extends Service {
 	// used from native
 	private void setServerClipboard(String text) {
 		if (!mSupportClipboard)
-			return;
+			throw new IllegalStateException();
+
 		ClipData clip = ClipData.newPlainText("VNCFlinger", text);
 		mClipboard.setPrimaryClip(clip);
 	}
@@ -336,7 +314,7 @@ public class VncFlinger extends Service {
 	// used from native
 	private String getServerClipboard() {
 		if (!mSupportClipboard)
-			return "";
+			throw new IllegalStateException();
 
 		String text = "";
 		if (mClipboard.hasPrimaryClip() && mClipboard.getPrimaryClipDescription().hasMimeType(MIMETYPE_TEXT_PLAIN)) {
@@ -355,7 +333,7 @@ public class VncFlinger extends Service {
 
 	private native int initializeVncFlinger(String[] commandLineArgs);
 
-	private native void setDisplayProps(int width, int height, int rotation, int layerId, boolean emulateTouch, boolean useRelativeInput);
+	private native void setDisplayProps(int width, int height, int rotation, int layerId, boolean emulateTouch, boolean useRelativeInput, boolean supportClipboard);
 
 	private native int startService();
 

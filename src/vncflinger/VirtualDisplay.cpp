@@ -53,11 +53,11 @@ VirtualDisplay::VirtualDisplay(ui::Size* mode, ui::Rotation* state,
     mCpuConsumer->setFrameAvailableListener(listener);
 
 	if (mLayerId >= 0) {
-		mDisplayToken = SurfaceComposerClient::createDisplay(String8("VNC-VirtualDisplay"), false); //TODO: figure out why sf doesnt let us use secure display, we are system
+		mDisplayToken = SurfaceComposerClient::createDisplay(String8("VNC-VirtualDisplay"), true);
 
 		SurfaceComposerClient::Transaction t;
 		t.setDisplaySurface(mDisplayToken, mProducer);
-		t.setDisplayProjection(mDisplayToken, *state, mSourceRect, displayRect);
+		t.setDisplayProjection(mDisplayToken, ui::ROTATION_0, mSourceRect, displayRect);
 		t.setDisplayLayerStack(mDisplayToken, android::ui::LayerStack::fromValue(mLayerId));
 		t.apply();
 	}

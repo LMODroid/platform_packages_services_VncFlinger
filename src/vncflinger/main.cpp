@@ -178,12 +178,12 @@ extern "C" void Java_com_libremobileos_vncflinger_VncFlinger_quit(JNIEnv *env, j
 extern "C" void Java_com_libremobileos_vncflinger_VncFlinger_setDisplayProps(JNIEnv *env,
                                                                               jobject thiz, jint w,
                                                                               jint h, jint rotation, jint layerId, jboolean touch,
-                                                                              jboolean relative) {
+                                                                              jboolean relative, jboolean clipboard) {
 	if (desktop == NULL) {
 		ALOGW("setDisplayProps: desktop == NULL");
 		return;
 	}
-	desktop->_width = w; desktop->_height = h; desktop->_rotation = rotation; desktop->mLayerId = layerId; desktop->touch = touch; desktop->relative = relative;
+	desktop->_width = w; desktop->_height = h; desktop->_rotation = rotation; desktop->mLayerId = layerId; desktop->touch = touch; desktop->relative = relative; desktop->clipboard == clipboard;
 }
 
 extern "C" void Java_com_libremobileos_vncflinger_VncFlinger_notifyServerClipboardChanged(

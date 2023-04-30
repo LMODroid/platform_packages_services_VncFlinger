@@ -75,6 +75,7 @@ void AndroidDesktop::stop() {
 }
 
 void AndroidDesktop::handleClipboardRequest() {
+    if (!clipboard) return;
     const char* data = runJniCallbackGetClipboard();
     if (strlen(data)) mServer->sendClipboardData(data);
 }
@@ -84,6 +85,7 @@ void AndroidDesktop::handleClipboardAnnounce(bool available) {
 }
 
 void AndroidDesktop::handleClipboardData(const char* data) {
+    if (!clipboard) return;
     runJniCallbackSetClipboard(data);
 }
 
@@ -97,7 +99,7 @@ void AndroidDesktop::processClipboard() {
         return;
     clipboardChanged = false;
 
-    if (mServer) mServer->announceClipboard(true);
+    if (mServer) mServer->announceClipboard(clipboard);
 }
 
 void AndroidDesktop::setCursor(uint32_t width, uint32_t height, int hotX, int hotY,
@@ -118,11 +120,11 @@ void AndroidDesktop::processCursor() {
 }
 
 void AndroidDesktop::processFrames() {
+    if (!frameChanged)
+        return;
     if (mVirtualDisplay == NULL)
         return;
     if (mPixels == NULL)
-        return;
-    if (!frameChanged)
         return;
     frameChanged = false;
 
@@ -251,8 +253,6 @@ status_t AndroidDesktop::updateDisplayInfo(bool force) {
             return err;
         }
         mDisplayState = tempDisplayState.orientation;
-
-        mLayerId = 0; // internal display constant id
     } else if (_width > 0 && _height > 0 && _rotation > -1) {
         mDisplayMode = ui::Size(_width, _height);
         mDisplayState = _rotation == 270 ? ui::ROTATION_270 : (_rotation == 180 ? ui::ROTATION_180 : (_rotation == 90 ? ui::ROTATION_90 : ui::ROTATION_0));
