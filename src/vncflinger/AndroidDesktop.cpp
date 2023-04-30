@@ -168,7 +168,7 @@ void AndroidDesktop::notify() {
 // called when a client resizes the window
 unsigned int AndroidDesktop::setScreenLayout(int reqWidth, int reqHeight,
                                              const rfb::ScreenSet& layout) {
-	if (mLayerId < 0) {
+    if (mLayerId < 0) {
         runJniCallbackResizeDisplay(reqWidth, reqHeight);
         // if we return success, we crash because the mode change took too long.
         return rfb::resultInvalid;
@@ -262,7 +262,7 @@ status_t AndroidDesktop::updateDisplayInfo(bool force) {
     }
 
     ALOGV("updateDisplayInfo: [%d:%d], rotated %d, layerId %d", mDisplayMode.width, mDisplayMode.height, mDisplayState, mLayerId);
-	if (mPixels != NULL)
+    if (mPixels != NULL)
         mPixels->setDisplayInfo(&mDisplayMode, &mDisplayState, force);
     return NO_ERROR;
 }

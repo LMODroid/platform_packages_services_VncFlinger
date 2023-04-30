@@ -60,7 +60,7 @@ static void printVersion(FILE* fp) {
 static void CleanupSignalHandler(int)
 {
     ALOGI("You killed me - cleaning up");
-	desktop = NULL;
+    desktop = NULL;
     if (mPidFile.length() != 0) {
         remove(mPidFile.c_str());
     }
@@ -109,7 +109,7 @@ extern "C" void Java_com_libremobileos_vncflinger_VncFlinger_notifyServerCursorC
         }
         AndroidBitmapInfo bitmapInfo = pointerIcon.bitmap.getInfo();
 
-	    desktop->setCursor(bitmapInfo.width, bitmapInfo.height, pointerIcon.hotSpotX,
+        desktop->setCursor(bitmapInfo.width, bitmapInfo.height, pointerIcon.hotSpotX,
                            pointerIcon.hotSpotY, (rdr::U8*)pointerIcon.bitmap.getPixels());
     }
     return;
@@ -117,73 +117,73 @@ extern "C" void Java_com_libremobileos_vncflinger_VncFlinger_notifyServerCursorC
 
 extern "C" jint Java_com_libremobileos_vncflinger_VncFlinger_initializeVncFlinger(JNIEnv *env,
                                                                                    jobject thiz,
-																				   jobjectArray command_line_args) {
-	const int argc = env->GetArrayLength(command_line_args);
-	char* argv[argc];
-	for (int i=0; i<argc; i++) {
-		jstring o = (jstring)(env->GetObjectArrayElement(command_line_args, i));
-		const char *cmdline_temp = env->GetStringUTFChars(o, NULL);
-		argv[i] = strdup(cmdline_temp);
-		env->ReleaseStringUTFChars(o, cmdline_temp);
-		env->DeleteLocalRef(o);
-	}
-	env->DeleteLocalRef(command_line_args);
-	gThiz = thiz; gEnv = env;
+                                                                                   jobjectArray command_line_args) {
+    const int argc = env->GetArrayLength(command_line_args);
+    char* argv[argc];
+    for (int i=0; i<argc; i++) {
+        jstring o = (jstring)(env->GetObjectArrayElement(command_line_args, i));
+        const char *cmdline_temp = env->GetStringUTFChars(o, NULL);
+        argv[i] = strdup(cmdline_temp);
+        env->ReleaseStringUTFChars(o, cmdline_temp);
+        env->DeleteLocalRef(o);
+    }
+    env->DeleteLocalRef(command_line_args);
+    gThiz = thiz; gEnv = env;
     gMethodNewSurfaceAvailable =
         env->GetMethodID(env->GetObjectClass(thiz), "onNewSurfaceAvailable", "()V");
     gMethodResizeDisplay = env->GetMethodID(env->GetObjectClass(thiz), "onResizeDisplay", "(II)V");
     gMethodSetClipboard = env->GetMethodID(env->GetObjectClass(thiz), "setServerClipboard", "(Ljava/lang/String;)V");
     gMethodGetClipboard = env->GetMethodID(env->GetObjectClass(thiz), "getServerClipboard", "()Ljava/lang/String;");
-	return desktopSetup(argc, argv);
+    return desktopSetup(argc, argv);
 }
 
 extern "C" jobject Java_com_libremobileos_vncflinger_VncFlinger_getSurface(JNIEnv * env,
-																			jobject thiz
+                                                                            jobject thiz
 ) {
-	if (desktop == NULL) {
-		ALOGV("getSurface: desktop == NULL");
-		return NULL;
-	}
-	if (desktop->mVirtualDisplay == NULL){
-		ALOGW("getSurface: mVirtualDisplay == NULL");
-		return NULL;
-	}
-	if (desktop->mVirtualDisplay->getProducer() == NULL){
-		ALOGW("getSurface: getProducer() == NULL");
-		return NULL;
-	}
-	ANativeWindow* w = new Surface(desktop->mVirtualDisplay->getProducer(), true);
-	//Rect dr = desktop->mVirtualDisplay->getDisplayRect();
-	//if we want to bring back window resizing without display resize, we need to scale buffer to dr
-	if (w == NULL) {
-		ALOGE("getSurface: w == NULL");
-		return NULL;
-	}
-	jobject a = ANativeWindow_toSurface(env, w);
-	if (a == NULL) {
-		ALOGE("getSurface: a == NULL");
-	}
-	return a;
+    if (desktop == NULL) {
+        ALOGV("getSurface: desktop == NULL");
+        return NULL;
+    }
+    if (desktop->mVirtualDisplay == NULL){
+        ALOGW("getSurface: mVirtualDisplay == NULL");
+        return NULL;
+    }
+    if (desktop->mVirtualDisplay->getProducer() == NULL){
+        ALOGW("getSurface: getProducer() == NULL");
+        return NULL;
+    }
+    ANativeWindow* w = new Surface(desktop->mVirtualDisplay->getProducer(), true);
+    //Rect dr = desktop->mVirtualDisplay->getDisplayRect();
+    //if we want to bring back window resizing without display resize, we need to scale buffer to dr
+    if (w == NULL) {
+        ALOGE("getSurface: w == NULL");
+        return NULL;
+    }
+    jobject a = ANativeWindow_toSurface(env, w);
+    if (a == NULL) {
+        ALOGE("getSurface: a == NULL");
+    }
+    return a;
 }
 
 extern "C" jint Java_com_libremobileos_vncflinger_VncFlinger_startService(JNIEnv* env, jobject thiz) {
-	gThiz = thiz; gEnv = env;
+    gThiz = thiz; gEnv = env;
     return startService();
 }
 
 extern "C" void Java_com_libremobileos_vncflinger_VncFlinger_quit(JNIEnv *env, jobject thiz) {
-	gCaughtSignal = true;
+    gCaughtSignal = true;
 }
 
 extern "C" void Java_com_libremobileos_vncflinger_VncFlinger_setDisplayProps(JNIEnv *env,
                                                                               jobject thiz, jint w,
                                                                               jint h, jint rotation, jint layerId, jboolean touch,
                                                                               jboolean relative, jboolean clipboard) {
-	if (desktop == NULL) {
-		ALOGW("setDisplayProps: desktop == NULL");
-		return;
-	}
-	desktop->_width = w; desktop->_height = h; desktop->_rotation = rotation; desktop->mLayerId = layerId; desktop->touch = touch; desktop->relative = relative; desktop->clipboard == clipboard;
+    if (desktop == NULL) {
+        ALOGW("setDisplayProps: desktop == NULL");
+        return;
+    }
+    desktop->_width = w; desktop->_height = h; desktop->_rotation = rotation; desktop->mLayerId = layerId; desktop->touch = touch; desktop->relative = relative; desktop->clipboard == clipboard;
 }
 
 extern "C" void Java_com_libremobileos_vncflinger_VncFlinger_notifyServerClipboardChanged(
@@ -196,59 +196,59 @@ extern "C" void Java_com_libremobileos_vncflinger_VncFlinger_notifyServerClipboa
 }
 
 int desktopSetup(int argc, char** argv) {
-	rfb::initAndroidLogger();
-	rfb::LogWriter::setLogParams("*:android:30");
+    rfb::initAndroidLogger();
+    rfb::LogWriter::setLogParams("*:android:30");
 
-	rfb::Configuration::enableServerParams();
+    rfb::Configuration::enableServerParams();
 
 #ifdef SIGHUP
-	signal(SIGHUP, CleanupSignalHandler);
+    signal(SIGHUP, CleanupSignalHandler);
 #endif
-	signal(SIGINT, CleanupSignalHandler);
-	signal(SIGTERM, CleanupSignalHandler);
+    signal(SIGINT, CleanupSignalHandler);
+    signal(SIGTERM, CleanupSignalHandler);
 
-	for (int i = 1; i < argc; i++) {
-		if (argv[i][0] == '-') {
-			if (i + 1 < argc) {
-				if (rfb::Configuration::setParam(&argv[i][1], argv[i + 1])) {
-					i++;
-					continue;
-				}
-			}
-		}
+    for (int i = 1; i < argc; i++) {
+        if (argv[i][0] == '-') {
+            if (i + 1 < argc) {
+                if (rfb::Configuration::setParam(&argv[i][1], argv[i + 1])) {
+                    i++;
+                    continue;
+                }
+            }
+        }
 
-		if (rfb::Configuration::setParam(argv[i])) continue;
+        if (rfb::Configuration::setParam(argv[i])) continue;
 
-		if (argv[i][0] == '-') {
-			if (strcmp(argv[i], "-pid") == 0) {
-				if (i + 1 < argc) {
-					mPidFile = std::string(argv[i + 1]);
-					i++;
-					continue;
-				}
-			}
-			if (strcmp(argv[i], "-v") == 0 || strcmp(argv[i], "-version") == 0 ||
-			    strcmp(argv[i], "--version") == 0) {
-				printVersion(stdout);
-				return 4;
-			}
-			return 2;
-		}
+        if (argv[i][0] == '-') {
+            if (strcmp(argv[i], "-pid") == 0) {
+                if (i + 1 < argc) {
+                    mPidFile = std::string(argv[i + 1]);
+                    i++;
+                    continue;
+                }
+            }
+            if (strcmp(argv[i], "-v") == 0 || strcmp(argv[i], "-version") == 0 ||
+                strcmp(argv[i], "--version") == 0) {
+                printVersion(stdout);
+                return 4;
+            }
+            return 2;
+        }
 
-		ALOGE("Invalid input. i=%d", i);
-		return 5;
-	}
+        ALOGE("Invalid input. i=%d", i);
+        return 5;
+    }
 
-	desktop = new AndroidDesktop();
+    desktop = new AndroidDesktop();
 
-	return 0;
+    return 0;
 }
 
 int startService() {
-	property_get("ro.build.product", gSerialNo, "");
-	std::string desktopName = "VNCFlinger";
-	desktopName += " @ ";
-	desktopName += (const char *) gSerialNo;
+    property_get("ro.build.product", gSerialNo, "");
+    std::string desktopName = "VNCFlinger";
+    desktopName += " @ ";
+    desktopName += (const char *) gSerialNo;
 
     sp<ProcessState> self = ProcessState::self();
     self->startThreadPool();
@@ -259,15 +259,15 @@ int startService() {
         rfb::VNCServerST server(desktopName.c_str(), desktop.get());
 
         if (rfbunixpath.getValueStr()[0] != '\0') {
-			if (rfbunixandroid) {
-				listeners.push_back(new AndroidListener(rfbunixpath));
-			} else {
-				if (rfbunixpath.getValueStr()[0] != '@') {
-					listeners.push_back(new network::UnixListener(rfbunixpath, rfbunixmode));
-				} else {
-					listeners.push_back(new AbsUnixListener(rfbunixpath));
-				}
-			}
+            if (rfbunixandroid) {
+                listeners.push_back(new AndroidListener(rfbunixpath));
+            } else {
+                if (rfbunixpath.getValueStr()[0] != '@') {
+                    listeners.push_back(new network::UnixListener(rfbunixpath, rfbunixmode));
+                } else {
+                    listeners.push_back(new AbsUnixListener(rfbunixpath));
+                }
+            }
             ALOGI("Listening on %s (mode %04o)", (const char*)rfbunixpath, (int)rfbunixmode);
         } else {
             if (localhostOnly) {
@@ -365,14 +365,14 @@ int startService() {
                 if (FD_ISSET((*i)->getFd(), &wfds)) server.processSocketWriteEvent(*i);
             }
 
-	        // Process events from the display
+            // Process events from the display
             uint64_t eventVal;
             int status = read(eventFd, &eventVal, sizeof(eventVal));
             if (status > 0 && eventVal > 0) {
                 //ALOGV("status=%d eventval=%" PRIu64, status, eventVal);
-	            desktop->processCursor();
+                desktop->processCursor();
                 desktop->processFrames();
-	            desktop->processClipboard();
+                desktop->processClipboard();
             }
 
         }
@@ -381,14 +381,14 @@ int startService() {
         ALOGE("%s", e.str());
         ret = 3;
     }
-	desktop = NULL;
+    desktop = NULL;
     ALOGI("Bye - cleaning up");
-	gEnv = NULL;
-	gThiz = NULL;
-	gSerialNo[0] = '\0';
-	for (std::list<network::SocketListener*>::iterator i = listeners.begin();
-	     i != listeners.end(); i++)
-		delete (*i);
+    gEnv = NULL;
+    gThiz = NULL;
+    gSerialNo[0] = '\0';
+    for (std::list<network::SocketListener*>::iterator i = listeners.begin();
+         i != listeners.end(); i++)
+        delete (*i);
     if (mPidFile.length() != 0) {
         remove(mPidFile.c_str());
     }

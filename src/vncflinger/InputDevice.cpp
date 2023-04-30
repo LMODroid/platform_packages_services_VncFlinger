@@ -353,7 +353,7 @@ status_t InputDevice::start(uint32_t width, uint32_t height, bool istouch, bool 
 
     mLeftClicked = mMiddleClicked = mRightClicked = false;
     mLastX = mLastY = 0;
-	touch = istouch; useRelativeInput = relative;
+    touch = istouch; useRelativeInput = relative;
 
     struct input_id id = {
         BUS_VIRTUAL, /* Bus type */

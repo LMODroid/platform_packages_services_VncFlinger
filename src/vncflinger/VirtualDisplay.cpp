@@ -52,15 +52,15 @@ VirtualDisplay::VirtualDisplay(ui::Size* mode, ui::Rotation* state,
 
     mCpuConsumer->setFrameAvailableListener(listener);
 
-	if (mLayerId >= 0) {
-		mDisplayToken = SurfaceComposerClient::createDisplay(String8("VNC-VirtualDisplay"), true);
+    if (mLayerId >= 0) {
+        mDisplayToken = SurfaceComposerClient::createDisplay(String8("VNC-VirtualDisplay"), true);
 
-		SurfaceComposerClient::Transaction t;
-		t.setDisplaySurface(mDisplayToken, mProducer);
-		t.setDisplayProjection(mDisplayToken, ui::ROTATION_0, mSourceRect, displayRect);
-		t.setDisplayLayerStack(mDisplayToken, android::ui::LayerStack::fromValue(mLayerId));
-		t.apply();
-	}
+        SurfaceComposerClient::Transaction t;
+        t.setDisplaySurface(mDisplayToken, mProducer);
+        t.setDisplayProjection(mDisplayToken, ui::ROTATION_0, mSourceRect, displayRect);
+        t.setDisplayLayerStack(mDisplayToken, android::ui::LayerStack::fromValue(mLayerId));
+        t.apply();
+    }
 
     ALOGV("Virtual display %d (%ux%u [viewport=%ux%u]) created", mLayerId, width, height, displayRect.getWidth(),
           displayRect.getHeight());

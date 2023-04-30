@@ -40,9 +40,9 @@ class AndroidDesktop : public rfb::SDesktop,
     virtual void handleClipboardAnnounce(bool available);
     virtual void handleClipboardData(const char* data);
     virtual void notifyClipboardChanged();
-	virtual void processClipboard();
+    virtual void processClipboard();
     virtual void setCursor(uint32_t width, uint32_t height, int hotX, int hotY, const rdr::U8* buffer);
-	virtual void processCursor();
+    virtual void processCursor();
 
     virtual unsigned int setScreenLayout(int fb_width, int fb_height, const rfb::ScreenSet& layout);
 
@@ -61,11 +61,11 @@ class AndroidDesktop : public rfb::SDesktop,
 
     virtual void queryConnection(network::Socket* sock, const char* userName);
 
-	// Virtual display controller
-	int32_t mLayerId = -1;
+    // Virtual display controller
+    int32_t mLayerId = -1;
     sp<VirtualDisplay> mVirtualDisplay;
     int32_t _width = 1, _height = 1, _rotation = 0;
-	bool touch = false, relative = false, clipboard = false;
+    bool touch = false, relative = false, clipboard = false;
   private:
     virtual void notify();
 
@@ -86,21 +86,21 @@ class AndroidDesktop : public rfb::SDesktop,
 
     // Pixel buffer
     sp<AndroidPixelBuffer> mPixels = NULL;
-	bool frameChanged = false;
+    bool frameChanged = false;
 
-	bool clipboardChanged = false;
+    bool clipboardChanged = false;
 
-	// Primary display
+    // Primary display
     ui::Size mDisplayMode = {};
     ui::Rotation mDisplayState = {};
 
     // Virtual input device
     sp<InputDevice> mInputDevice;
 
-	bool cursorChanged = false;
-	uint32_t cur_width, cur_height;
-	int cur_hotX, cur_hotY;
-	const rdr::U8* cur_buffer;
+    bool cursorChanged = false;
+    uint32_t cur_width, cur_height;
+    int cur_hotX, cur_hotY;
+    const rdr::U8* cur_buffer;
 };
 };
 
