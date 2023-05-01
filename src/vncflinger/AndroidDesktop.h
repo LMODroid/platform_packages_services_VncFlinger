@@ -2,6 +2,7 @@
 #define ANDROID_DESKTOP_H_
 
 #include <memory>
+#include <mutex>
 
 #include <utils/Condition.h>
 #include <utils/Mutex.h>
@@ -66,6 +67,7 @@ class AndroidDesktop : public rfb::SDesktop,
     sp<VirtualDisplay> mVirtualDisplay;
     int32_t _width = 1, _height = 1, _rotation = 0;
     bool touch = false, relative = false, clipboard = false;
+    std::mutex jniConfigMutex;
   private:
     virtual void notify();
 

@@ -99,11 +99,13 @@ void AndroidDesktop::processClipboard() {
         return;
     clipboardChanged = false;
 
+    std::lock_guard<std::mutex> lock(jniConfigMutex);
     if (mServer) mServer->announceClipboard(clipboard);
 }
 
 void AndroidDesktop::setCursor(uint32_t width, uint32_t height, int hotX, int hotY,
                                const rdr::U8* buffer) {
+    std::lock_guard<std::mutex> lock(jniConfigMutex);
     cur_width = width; cur_height = height;
     cur_buffer = buffer;
     cur_hotX = hotX; cur_hotY = hotY;
@@ -116,6 +118,7 @@ void AndroidDesktop::processCursor() {
         return;
     cursorChanged = false;
 
+    std::lock_guard<std::mutex> lock(jniConfigMutex);
     mServer->setCursor(cur_width, cur_height, rfb::Point(cur_hotX, cur_hotY), cur_buffer);
 }
 
