@@ -222,8 +222,8 @@ void AndroidDesktop::pointerEvent(const rfb::Point& pos, int buttonMask) {
     }
     uint32_t mx = (mPixels->width() - mDisplayRect.getWidth()) / 2;
     uint32_t my = (mPixels->height() - mDisplayRect.getHeight()) / 2;
-    uint32_t x = (((pos.x - mx) * mDisplayMode.width) / ((float)(mDisplayRect.getWidth())));
-    uint32_t y = (((pos.y - my) * mDisplayMode.height) / ((float)(mDisplayRect.getHeight())));
+    uint32_t x = (((pos.x - mx) * mDisplayModeRotated.width) / ((float)(mDisplayRect.getWidth())));
+    uint32_t y = (((pos.y - my) * mDisplayModeRotated.height) / ((float)(mDisplayRect.getHeight())));
 
     ALOGV("pointer xlate x1=%d y1=%d x2=%d y2=%d", pos.x, pos.y, x, y);
 
@@ -263,6 +263,8 @@ status_t AndroidDesktop::updateDisplayInfo(bool force) {
         ALOGE("Invalid rect");
         return -1;
     }
+    bool rotated = mDisplayState == ui::ROTATION_90 || mDisplayState == ui::ROTATION_270;
+    mDisplayModeRotated = ui::Size(rotated ? mDisplayMode.height : mDisplayMode.width, rotated ? mDisplayMode.width : mDisplayMode.height);
 
     ALOGV("updateDisplayInfo: [%d:%d], rotated %d, layerId %d", mDisplayMode.width, mDisplayMode.height, mDisplayState, mLayerId);
     if (mPixels != NULL)
@@ -288,7 +290,7 @@ void AndroidDesktop::onBufferDimensionsChanged(uint32_t width, uint32_t height) 
 
     mDisplayRect = mVirtualDisplay->getDisplayRect();
 
-    mInputDevice->reconfigure(mDisplayMode.width, mDisplayMode.height, touch, relative);
+    mInputDevice->reconfigure(mDisplayModeRotated.width, mDisplayModeRotated.height, touch, relative);
 
     mServer->setPixelBuffer(mPixels.get(), computeScreenLayout());
     mServer->setScreenLayout(computeScreenLayout());
