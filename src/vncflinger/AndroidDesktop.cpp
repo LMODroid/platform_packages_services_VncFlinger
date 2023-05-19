@@ -104,7 +104,7 @@ void AndroidDesktop::processClipboard() {
 }
 
 void AndroidDesktop::setCursor(uint32_t width, uint32_t height, int hotX, int hotY,
-                               const rdr::U8* buffer) {
+                               const uint8_t* buffer) {
     std::lock_guard<std::mutex> lock(jniConfigMutex);
     cur_width = width; cur_height = height;
     cur_buffer = buffer;
@@ -209,7 +209,7 @@ void AndroidDesktop::onFrameAvailable(const BufferItem& item) {
     notify();
 }
 
-void AndroidDesktop::keyEvent(rdr::U32 keysym, __unused_attr rdr::U32 keycode, bool down) {
+void AndroidDesktop::keyEvent(uint32_t keysym, uint32_t /*keycode*/, bool down) {
     mInputDevice->keyEvent(down, keysym);
 }
 
@@ -296,7 +296,7 @@ void AndroidDesktop::onBufferDimensionsChanged(uint32_t width, uint32_t height) 
     mServer->setScreenLayout(computeScreenLayout());
 }
 
-void AndroidDesktop::queryConnection(network::Socket* sock, __unused_attr const char* userName) {
+void AndroidDesktop::queryConnection(network::Socket* sock, const char* /*userName*/) {
     mServer->approveConnection(sock, true, NULL);
 }
 

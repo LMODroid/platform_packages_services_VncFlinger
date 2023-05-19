@@ -110,7 +110,7 @@ extern "C" void Java_com_libremobileos_vncflinger_VncFlinger_notifyServerCursorC
         AndroidBitmapInfo bitmapInfo = pointerIcon.bitmap.getInfo();
 
         desktop->setCursor(bitmapInfo.width, bitmapInfo.height, pointerIcon.hotSpotX,
-                           pointerIcon.hotSpotY, (rdr::U8*)pointerIcon.bitmap.getPixels());
+                           pointerIcon.hotSpotY, (uint8_t*)pointerIcon.bitmap.getPixels());
     }
     return;
 }
