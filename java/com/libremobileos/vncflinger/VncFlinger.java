@@ -82,6 +82,7 @@ public class VncFlinger extends Service {
             boolean newHasAudio = intent.getBooleanExtra("hasAudio", mHasAudio);
             boolean newRemoteCursor = intent.getBooleanExtra("remoteCursor", mRemoteCursor);
             boolean newSupportClipboard = intent.getBooleanExtra("clipboard", mSupportClipboard);
+            boolean needSetDisplayProps = false;
 
             if (mSupportClipboard != newSupportClipboard) {
                 Log.i(LOG_TAG, "Updating clipboard listener");
@@ -94,6 +95,7 @@ public class VncFlinger extends Service {
                     mClipboard.removePrimaryClipChangedListener(mClipListener);
                 }
                 mSupportClipboard = newSupportClipboard;
+                needSetDisplayProps = true;
             }
 
             if (newEmulateTouch != mEmulateTouch || newUseRelativeInput != mUseRelativeInput
@@ -105,6 +107,7 @@ public class VncFlinger extends Service {
                 mAllowResize = newAllowResize;
                 mHasAudio = newHasAudio;
                 mRemoteCursor = newRemoteCursor;
+                needSetDisplayProps = false;
 
                 Log.i(LOG_TAG, "Restarting VNCFlinger");
                 cleanup();
@@ -113,16 +116,21 @@ public class VncFlinger extends Service {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-            } else if (newWidth != mWidth || newHeight != mHeight || newDPI != mDPI) {
-                Log.i(LOG_TAG, "Resizing VNCFlinger");
-                if (newWidth == mWidth && newHeight == mHeight && newDPI != mDPI) {
-                    changeDPI(newDPI);
-                    return START_NOT_STICKY;
-                }
-                resizeResolution(newWidth, newHeight, newDPI);
-                return START_NOT_STICKY;
             } else {
-                Log.i(LOG_TAG, "VNCFlinger already running with same settings");
+                if (newWidth != mWidth || newHeight != mHeight || newDPI != mDPI) {
+                    Log.i(LOG_TAG, "Resizing VNCFlinger");
+                    if (newWidth == mWidth && newHeight == mHeight && newDPI != mDPI) {
+                        changeDPI(newDPI);
+                    } else {
+                        resizeResolution(newWidth, newHeight, newDPI);
+                    }
+                } else {
+                    if (needSetDisplayProps) {
+                        doSetDisplayProps();
+                        needSetDisplayProps = false;
+                    }
+                    Log.i(LOG_TAG, "VNCFlinger already running with same settings");
+                }
                 return START_NOT_STICKY;
             }
         } else {

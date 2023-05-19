@@ -184,7 +184,7 @@ extern "C" void Java_com_libremobileos_vncflinger_VncFlinger_setDisplayProps(JNI
         return;
     }
     std::lock_guard<std::mutex> lock(desktop->jniConfigMutex);
-    desktop->_width = w; desktop->_height = h; desktop->_rotation = rotation; desktop->mLayerId = layerId; desktop->touch = touch; desktop->relative = relative; desktop->clipboard == clipboard;
+    desktop->_width = w; desktop->_height = h; desktop->_rotation = rotation; desktop->mLayerId = layerId; desktop->touch = touch; desktop->relative = relative; desktop->clipboard = clipboard;
 }
 
 extern "C" void Java_com_libremobileos_vncflinger_VncFlinger_notifyServerClipboardChanged(
