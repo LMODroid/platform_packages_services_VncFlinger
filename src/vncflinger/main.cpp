@@ -196,6 +196,15 @@ extern "C" void Java_com_libremobileos_vncflinger_VncFlinger_notifyServerClipboa
     desktop->notifyClipboardChanged();
 }
 
+extern "C" void Java_com_libremobileos_vncflinger_VncFlinger_notifyDisplayReady(
+    JNIEnv* env, jobject thiz) {
+    if (desktop == NULL) {
+        ALOGW("notifyDisplayReady: desktop == NULL");
+        return;
+    }
+    desktop->notifyInputChanged();
+}
+
 int desktopSetup(int argc, char** argv) {
     rfb::initAndroidLogger();
     rfb::LogWriter::setLogParams("*:android:30");
@@ -372,6 +381,7 @@ int startService() {
             if (status > 0 && eventVal > 0) {
                 //ALOGV("status=%d eventval=%" PRIu64, status, eventVal);
                 desktop->processCursor();
+                desktop->processInputChanged();
                 desktop->processFrames();
                 desktop->processClipboard();
             }

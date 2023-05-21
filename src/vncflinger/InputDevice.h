@@ -39,6 +39,7 @@ class InputDevice : public RefBase {
     virtual void keyEvent(bool down, uint32_t key);
     virtual void pointerEvent(int buttonMask, int x, int y);
 
+    inline bool isOpened() { return mOpened; }
     InputDevice() : mFD(-1) {
     }
     virtual ~InputDevice() {

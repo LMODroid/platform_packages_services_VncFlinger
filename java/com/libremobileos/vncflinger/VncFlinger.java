@@ -26,7 +26,7 @@ import android.view.Surface;
 
 import com.libremobileos.vncflinger.IVncFlinger;
 
-public class VncFlinger extends Service {
+public class VncFlinger extends Service implements DisplayManager.DisplayListener {
 
     static {
         System.loadLibrary("jni_vncflinger");
@@ -48,6 +48,7 @@ public class VncFlinger extends Service {
     public String mIntentPkg = null;
     public String mIntentComponent = null;
 
+    public DisplayManager mDisplayManager;
     public VirtualDisplay mDisplay;
     public ClipboardManager mClipboard;
     public String[] mVNCFlingerArgs;
@@ -154,12 +155,13 @@ public class VncFlinger extends Service {
         mAudioStreamerArgs = new String[] { "audiostreamer", "-u", "@audiostreamer" };
 
         if (!mMirrorInternal) {
-            mDisplay = ((DisplayManager) getSystemService(DISPLAY_SERVICE))
-                    .createVirtualDisplay("VNC",
+            mDisplayManager = (DisplayManager) getSystemService(DISPLAY_SERVICE);
+            mDisplay = mDisplayManager.createVirtualDisplay("VNC",
                             mWidth, mHeight, mDPI, null,
                             VIRTUAL_DISPLAY_FLAG_SECURE | VIRTUAL_DISPLAY_FLAG_PUBLIC | VIRTUAL_DISPLAY_FLAG_TRUSTED
                                     | VIRTUAL_DISPLAY_FLAG_SUPPORTS_TOUCH
                                     | VIRTUAL_DISPLAY_FLAG_SHOULD_SHOW_SYSTEM_DECORATIONS);
+            mDisplayManager.registerDisplayListener(this, null);
         }
         if (mSupportClipboard) {
             mClipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
@@ -214,6 +216,34 @@ public class VncFlinger extends Service {
     }
 
     @Override
+    public void onDisplayAdded(int displayId) {
+        if (mDisplay == null) {
+            throw new IllegalStateException();
+        }
+        if (mDisplay.getDisplay().getDisplayId() != displayId)
+            return;
+        mDisplayManager.unregisterDisplayListener(this);
+        // dear google, i literally wait till framework tells me
+        // this display is ready so WHY is the delay needed
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        notifyDisplayReady();
+    }
+
+    @Override
+    public void onDisplayChanged(int displayId) {
+        onDisplayAdded(displayId);
+    }
+
+    @Override
+    public void onDisplayRemoved(int displayId) {
+        mDisplayManager.unregisterDisplayListener(this);
+    }
+
+    @Override
     public IBinder onBind(Intent intent) {
         return mBinder;
     }
@@ -264,6 +294,9 @@ public class VncFlinger extends Service {
         int exitCode;
         if ((exitCode = initializeVncFlinger(mVNCFlingerArgs)) == 0) {
             doSetDisplayProps();
+            if (mMirrorInternal) {
+                notifyDisplayReady();
+            }
             if ((exitCode = startService()) == 0) {
                 stopSelf();
                 return;
@@ -350,6 +383,8 @@ public class VncFlinger extends Service {
     private native Surface getSurface();
 
     private native void notifyServerClipboardChanged();
+
+    private native void notifyDisplayReady();
 
     private native int startAudioStreamer(String[] commandLineArgs);
 

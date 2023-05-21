@@ -279,6 +279,22 @@ rfb::ScreenSet AndroidDesktop::computeScreenLayout() {
     mServer->setScreenLayout(screens);
 }
 
+void AndroidDesktop::notifyInputChanged() {
+    mInputChanged = true;
+    notify();
+}
+
+void AndroidDesktop::processInputChanged() {
+    if (mInputChanged && mInputDevice != nullptr) {
+        mInputChanged = false;
+        reloadInput();
+    }
+}
+
+void AndroidDesktop::reloadInput() {
+    mInputDevice->reconfigure(mDisplayModeRotated.width, mDisplayModeRotated.height, touch, relative);
+}
+
 void AndroidDesktop::onBufferDimensionsChanged(uint32_t width, uint32_t height) {
     ALOGI("Dimensions changed: old=(%ux%u) new=(%ux%u)", mDisplayRect.getWidth(),
           mDisplayRect.getHeight(), width, height);
@@ -290,7 +306,9 @@ void AndroidDesktop::onBufferDimensionsChanged(uint32_t width, uint32_t height) 
 
     mDisplayRect = mVirtualDisplay->getDisplayRect();
 
-    mInputDevice->reconfigure(mDisplayModeRotated.width, mDisplayModeRotated.height, touch, relative);
+    if (mInputDevice->isOpened()) { // if we are resizing, first start gets called by java later
+        reloadInput();
+    }
 
     mServer->setPixelBuffer(mPixels.get(), computeScreenLayout());
     mServer->setScreenLayout(computeScreenLayout());

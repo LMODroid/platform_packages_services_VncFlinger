@@ -42,6 +42,8 @@ class AndroidDesktop : public rfb::SDesktop,
     virtual void handleClipboardData(const char* data);
     virtual void notifyClipboardChanged();
     virtual void processClipboard();
+    virtual void processInputChanged();
+    virtual void notifyInputChanged();
     virtual void setCursor(uint32_t width, uint32_t height, int hotX, int hotY, const uint8_t* buffer);
     virtual void processCursor();
 
@@ -70,6 +72,7 @@ class AndroidDesktop : public rfb::SDesktop,
     std::mutex jniConfigMutex;
   private:
     virtual void notify();
+    virtual void reloadInput();
 
     virtual status_t updateDisplayInfo(bool force = false);
 
@@ -91,6 +94,7 @@ class AndroidDesktop : public rfb::SDesktop,
     bool frameChanged = false;
 
     bool clipboardChanged = false;
+    bool mInputChanged = false;
 
     // Primary display
     ui::Size mDisplayMode = {};
