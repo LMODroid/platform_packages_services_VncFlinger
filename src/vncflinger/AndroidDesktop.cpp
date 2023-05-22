@@ -284,12 +284,12 @@ void AndroidDesktop::notifyInputChanged() {
 
 void AndroidDesktop::processInputChanged() {
     if (mInputChanged && mInputDevice != nullptr) {
-        mInputChanged = false;
         reloadInput();
     }
 }
 
 void AndroidDesktop::reloadInput() {
+    mInputChanged = false;
     mInputDevice->reconfigure(mDisplayModeRotated.width, mDisplayModeRotated.height, touch, relative);
 }
 
@@ -303,9 +303,7 @@ void AndroidDesktop::onBufferDimensionsChanged(uint32_t width, uint32_t height) 
 
     mDisplayRect = mVirtualDisplay->getDisplayRect();
 
-    if (mInputDevice->isOpened()) { // if we are resizing, first start gets called by java later
-        reloadInput();
-    }
+    reloadInput();
 
     mServer->setPixelBuffer(mPixels.get(), computeScreenLayout());
     mServer->setScreenLayout(computeScreenLayout());
