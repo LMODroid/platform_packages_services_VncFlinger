@@ -34,8 +34,6 @@ AndroidDesktop::AndroidDesktop() {
         ALOGE("Failed to create event notifier");
         return;
     }
-
-    runJniCallbackNewSurfaceAvailable();
 }
 
 AndroidDesktop::~AndroidDesktop() {
@@ -302,7 +300,6 @@ void AndroidDesktop::onBufferDimensionsChanged(uint32_t width, uint32_t height) 
     mVirtualDisplay.clear();
     mVirtualDisplay = new VirtualDisplay(&mDisplayMode,  &mDisplayState,
                                          mPixels->width(), mPixels->height(), mLayerId, this);
-    runJniCallbackNewSurfaceAvailable();
 
     mDisplayRect = mVirtualDisplay->getDisplayRect();
 
@@ -312,6 +309,8 @@ void AndroidDesktop::onBufferDimensionsChanged(uint32_t width, uint32_t height) 
 
     mServer->setPixelBuffer(mPixels.get(), computeScreenLayout());
     mServer->setScreenLayout(computeScreenLayout());
+
+    runJniCallbackNewSurfaceAvailable();
 }
 
 void AndroidDesktop::queryConnection(network::Socket* sock, const char* /*userName*/) {
