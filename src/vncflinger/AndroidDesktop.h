@@ -68,7 +68,7 @@ class AndroidDesktop : public rfb::SDesktop,
     int32_t mLayerId = -1;
     sp<VirtualDisplay> mVirtualDisplay;
     int32_t _width = 1, _height = 1, _rotation = 0;
-    bool touch = false, relative = false, clipboard = false;
+    bool touch = false, relative = false, clipboard = false, capture = false;
     std::mutex jniConfigMutex;
   private:
     virtual void notify();

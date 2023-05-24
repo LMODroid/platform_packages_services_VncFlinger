@@ -193,6 +193,11 @@ public class VncFlinger extends Service implements DisplayManager.DisplayListene
                     mOldPointerIcon = icon;
                     mOldPointerIconId = iconId;
                 }
+
+                @Override
+                public void onCaptureChanged(boolean enabled) throws RemoteException {
+                    notifyServerCaptureChanged(enabled);
+                }
             });
             inputManager.setForceNullCursor(true);
         } else {
@@ -391,4 +396,6 @@ public class VncFlinger extends Service implements DisplayManager.DisplayListene
     private native void endAudioStreamer();
 
     private native void notifyServerCursorChanged(PointerIcon icon);
+
+    private native void notifyServerCaptureChanged(boolean enabled);
 }

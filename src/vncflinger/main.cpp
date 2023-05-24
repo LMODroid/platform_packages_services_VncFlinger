@@ -115,6 +115,14 @@ extern "C" void Java_com_libremobileos_vncflinger_VncFlinger_notifyServerCursorC
     return;
 }
 
+extern "C" void Java_com_libremobileos_vncflinger_VncFlinger_notifyServerCaptureChanged(
+    JNIEnv* env, jboolean enabled) {
+    if (desktop != NULL) {
+        desktop->capture = enabled;
+    }
+    return;
+}
+
 extern "C" jint Java_com_libremobileos_vncflinger_VncFlinger_initializeVncFlinger(JNIEnv *env,
                                                                                    jobject thiz,
                                                                                    jobjectArray command_line_args) {
