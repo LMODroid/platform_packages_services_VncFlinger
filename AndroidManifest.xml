@@ -28,7 +28,6 @@
         tools:ignore="ProtectedPermissions" />
 
     <application
-        android:persistent="true"
         android:supportsRtl="true"
         android:theme="@android:style/Theme.DeviceDefault.DayNight"
         tools:ignore="MissingApplicationIcon">
